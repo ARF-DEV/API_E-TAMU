@@ -23,5 +23,7 @@ func NewAPI(db *sql.DB) *API {
 func (a *API) GetRouter() http.Handler {
 	r := chi.NewRouter()
 
+	r.Get("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))).ServeHTTP)
+
 	return r
 }

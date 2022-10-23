@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"E-TamuAPI/helpers"
+	"E-TamuAPI/models"
 	"E-TamuAPI/repository"
 	"context"
 	"encoding/base64"
@@ -67,6 +68,27 @@ func Authorization(userRepo *repository.UserRepository) func(next http.Handler) 
 
 			ctx := context.WithValue(r.Context(), "user_data", user)
 			r = r.WithContext(ctx)
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func Is(role string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			userData, ok := r.Context().Value("user_data").(models.User)
+			if !ok {
+				log.Println("userData not found")
+				helpers.ErrorResponseJSON(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			if userData.UserRole != role {
+				log.Println("role is unauthorized to access this endpoint")
+				helpers.ErrorResponseJSON(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
 
 			next.ServeHTTP(w, r)
 		})

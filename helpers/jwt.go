@@ -14,13 +14,13 @@ type UserClaims struct {
 	UserData models.User `json:"user_data"`
 }
 
-type RegisterOTPClaims struct {
+type RegisterVisitOTPClaims struct {
 	jwt.StandardClaims
-	UserData  models.User `json:"user_data"`
+	VisitData models.Visit `json:"visit_data"`
 	OTPSecret string
 }
 
-func GenerateRegisterOTPClaims(user models.User, expTime time.Time) (string, string, error) {
+func GenerateRegisterOTPClaims(visit models.Visit, expTime time.Time) (string, string, error) {
 	jwtKey := os.Getenv("JWT_OTP_KEY")
 
 	key, err := GenerateOTPcode(6)
@@ -29,8 +29,8 @@ func GenerateRegisterOTPClaims(user models.User, expTime time.Time) (string, str
 		return "", "", err
 	}
 
-	claims := RegisterOTPClaims{
-		UserData:  user,
+	claims := RegisterVisitOTPClaims{
+		VisitData: visit,
 		OTPSecret: key,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expTime.Unix(),

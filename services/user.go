@@ -14,11 +14,40 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 )
 
 func UpdateUserByID(userRepo *repository.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var u models.User
 
+		defer r.Body.Close()
+		err := json.NewDecoder(r.Body).Decode(&u)
+		if err != nil {
+			log.Println("Error on Create: ", err.Error())
+			helpers.ErrorResponseJSON(w, "Json is Invalid", http.StatusBadRequest)
+			return
+		}
+
+		validate := validator.New()
+
+		err = validate.Struct(u)
+
+		if err != nil {
+			log.Println("user is not valid : ", err.Error())
+			helpers.ErrorResponseJSON(w, "user invalid : "+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		updatedUser, err := userRepo.UpdateUser(u)
+
+		if err != nil {
+			log.Println("Error on update user repo : ", err.Error())
+			helpers.ErrorResponseJSON(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		helpers.SuccessResponseJSON(w, "Success", updatedUser)
 	}
 }
 func CreateUser(userRepo *repository.UserRepository) http.HandlerFunc {

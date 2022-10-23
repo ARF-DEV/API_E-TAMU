@@ -3,6 +3,7 @@ package repository
 import (
 	"E-TamuAPI/models"
 	"database/sql"
+	"fmt"
 )
 
 type UserRepository struct {
@@ -13,6 +14,28 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{
 		db: db,
 	}
+}
+
+func (u *UserRepository) GetUsersByName(name string) ([]models.User, error) {
+	sqlStatement := `SELECT user_id, user_name, user_email, user_role, user_password FROM user_data WHERE user_name LIKE ?;`
+	pattern := fmt.Sprintf("%c%s%c", '%', name, '%')
+	rows, err := u.db.Query(sqlStatement, pattern)
+
+	if err != nil {
+		return nil, err
+	}
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+
+		err = rows.Scan(&user.UserId, &user.UserName, &user.UserEmail, &user.UserRole, &user.UserPassword)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+	return users, nil
 }
 
 func (u *UserRepository) GetAllUser() ([]models.User, error) {

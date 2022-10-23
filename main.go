@@ -11,11 +11,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
-
 )
 
 func main() {
+	godotenv.Load()
 	rand.Seed(time.Now().Unix())
 	db, err := sql.Open("sqlite3", "file:./database.db?_foreign_keys=true")
 

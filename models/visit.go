@@ -1,7 +1,7 @@
 package models
 
 type Visit struct {
-	VisitId            int    `db:"visit_id" json:"visit_id" validate:"required"`
+	VisitId            int    `db:"visit_id" json:"visit_id"`
 	UserVisitedId      int    `db:"user_visited_id" json:"user_visited_id" validate:"required"`
 	GuestName          string `db:"guest_name" json:"guest_name" validate:"required"`
 	GuestEmail         string `db:"guest_email" json:"guest_email" validate:"required"`

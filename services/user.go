@@ -76,17 +76,22 @@ func CreateUser(userRepo *repository.UserRepository) http.HandlerFunc {
 
 func GetUserByID(userRepo *repository.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var u models.User
+		id := chi.URLParam(r, "id")
 
-		defer r.Body.Close()
-		err := json.NewDecoder(r.Body).Decode(&u)
-		if err != nil {
-			log.Println("Error on get users by name: ", err.Error())
-			helpers.ErrorResponseJSON(w, "Json is Invalid", http.StatusBadRequest)
+		if len(id) < 1 {
+			log.Println("Error product by id : id query not found")
+			helpers.ErrorResponseJSON(w, "id query required", http.StatusBadRequest)
 			return
 		}
 
-		user, err := userRepo.GetUserByID(u.UserId)
+		id_int, err := strconv.Atoi(id)
+
+		if err != nil {
+			log.Println("Error product by id : ", err.Error())
+			helpers.ErrorResponseJSON(w, "Invalid id query", http.StatusBadRequest)
+			return
+		}
+		user, err := userRepo.GetUserByID(id_int)
 
 		if err != nil {
 			fmt.Println("Error while getting users by name : ", err.Error())
@@ -99,17 +104,15 @@ func GetUserByID(userRepo *repository.UserRepository) http.HandlerFunc {
 }
 func GetUsersByName(userRepo *repository.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var u models.User
+		name := chi.URLParam(r, "name")
 
-		defer r.Body.Close()
-		err := json.NewDecoder(r.Body).Decode(&u)
-		if err != nil {
-			log.Println("Error on get users by name: ", err.Error())
-			helpers.ErrorResponseJSON(w, "Json is Invalid", http.StatusBadRequest)
+		if len(name) < 1 {
+			log.Println("Error : name params not found")
+			helpers.ErrorResponseJSON(w, "id params required", http.StatusBadRequest)
 			return
 		}
 
-		users, err := userRepo.GetUsersByName(u.UserName)
+		users, err := userRepo.GetUsersByName(name)
 
 		if err != nil {
 			fmt.Println("Error while getting users by name : ", err.Error())
@@ -170,15 +173,22 @@ func UserLogin(userRepo *repository.UserRepository) http.HandlerFunc {
 
 func GetAllUser(userRepo *repository.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		users, err := userRepo.GetAllUser()
+		name := r.URL.Query().Get("name")
 
-		if err != nil {
-			fmt.Println("Error while getting all user : ", err.Error())
-			helpers.ErrorResponseJSON(w, "Internal Server Error", http.StatusInternalServerError)
-			return
+		if len(name) > 0 {
+			GetUsersByName(userRepo).ServeHTTP(w, r)
+		} else {
+			users, err := userRepo.GetAllUser()
+
+			if err != nil {
+				fmt.Println("Error while getting all user : ", err.Error())
+				helpers.ErrorResponseJSON(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			helpers.SuccessResponseJSON(w, "Success", users)
 		}
 
-		helpers.SuccessResponseJSON(w, "Success", users)
 	}
 }
 

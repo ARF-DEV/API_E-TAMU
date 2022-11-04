@@ -3,6 +3,7 @@ package repository
 import (
 	"E-TamuAPI/models"
 	"database/sql"
+	"fmt"
 )
 
 type VisitRepository struct {
@@ -16,12 +17,13 @@ func NewVisitRepository(db *sql.DB) *VisitRepository {
 }
 
 func (v *VisitRepository) CreateVisit(visit models.Visit) (*models.Visit, error) {
+	fmt.Println(visit)
 	sqlStatement := `
-	insert into visit (user_visited_id, guest_name, guest_email, visit_intention, vaccine_certificate, visit_status, guest_feedback, guest_count, visit_hour, transportation, visit_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	RETURNING visit_id, user_visited_id, guest_name, guest_email, visit_intention, vaccine_certificate, visit_status, guest_feedback, guest_count, visit_hour, transportation, visit_date;`
+	insert into visit (user_visited_id, guest_name, guest_email, visit_intention, vaccine_certificate, visit_status, guest_count, visit_hour, transportation, visit_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	RETURNING visit_id, user_visited_id, guest_name, guest_email, visit_intention, vaccine_certificate, visit_status, guest_count, visit_hour, transportation, visit_date;`
 
 	var result models.Visit
-	err := v.db.QueryRow(sqlStatement, visit.VisitId, visit.UserVisitedId, visit.GuestName, visit.GuestEmail, visit.VisitIntention, visit.VaccineCertificate, visit.VisitStatus, visit.GuestCount, visit.VisitHour, visit.Transportation, visit.VisitDate).
+	err := v.db.QueryRow(sqlStatement, visit.UserVisitedId, visit.GuestName, visit.GuestEmail, visit.VisitIntention, visit.VaccineCertificate, visit.VisitStatus, visit.GuestCount, visit.VisitHour, visit.Transportation, visit.VisitDate).
 		Scan(&result.VisitId, &result.UserVisitedId, &result.GuestName, &result.GuestEmail, &result.VisitIntention, &result.VaccineCertificate, &result.VisitStatus, &result.GuestCount, &result.VisitHour, &result.Transportation, &result.VisitDate)
 
 	if err != nil {
@@ -69,6 +71,7 @@ func (v *VisitRepository) GetVisitByID(visitId int) (*models.Visit, error) {
 }
 
 func (v *VisitRepository) GetVisitByStaffID(staffId int) ([]models.Visit, error) {
+	fmt.Println(staffId)
 	sqlStatement := `SELECT * FROM visit WHERE user_visited_id = ?;`
 
 	rows, err := v.db.Query(sqlStatement, staffId)
@@ -78,10 +81,10 @@ func (v *VisitRepository) GetVisitByStaffID(staffId int) ([]models.Visit, error)
 	}
 
 	var visits []models.Visit
+	fmt.Println(rows)
 
 	for rows.Next() {
 		var result models.Visit
-		// err = rows.Scan(&result.VisitId, &result.UserVisitedId, &result.GuestName, &result.GuestEmail, &result.VisitIntention, &result.VaccineCertificate, &result.VisitStatus, &result.GuestFeedback, &result.GuestCount, &result.VisitHour, &result.Transportation)
 		err = rows.Scan(&result.VisitId, &result.UserVisitedId, &result.GuestName, &result.GuestEmail, &result.VisitIntention, &result.VaccineCertificate, &result.VisitDate, &result.VisitStatus, &result.GuestCount, &result.VisitHour, &result.Transportation)
 
 		if err != nil {
@@ -92,8 +95,8 @@ func (v *VisitRepository) GetVisitByStaffID(staffId int) ([]models.Visit, error)
 	return visits, nil
 }
 
-func (v *VisitRepository) GetVisitByStatus(status int) ([]models.Visit, error) {
-	sqlStatement := `SELECT * FROM visit WHERE visit_status = ?;`
+func (v *VisitRepository) GetVisitByStatus(status string) ([]models.Visit, error) {
+	sqlStatement := `SELECT * FROM visit WHERE visit_status LIKE ?;`
 
 	rows, err := v.db.Query(sqlStatement, status)
 
@@ -117,7 +120,7 @@ func (v *VisitRepository) GetVisitByStatus(status int) ([]models.Visit, error) {
 }
 
 func (v *VisitRepository) GetVisitByDate(startDate string, endDate string) ([]models.Visit, error) {
-	sqlStatement := `SELECT * FROM visit WHERE visit_status BETWEEN ? and ?;`
+	sqlStatement := `SELECT * FROM visit WHERE visit_date BETWEEN ? and ?;`
 
 	rows, err := v.db.Query(sqlStatement, startDate, endDate)
 
@@ -129,7 +132,7 @@ func (v *VisitRepository) GetVisitByDate(startDate string, endDate string) ([]mo
 
 	for rows.Next() {
 		var result models.Visit
-		err = rows.Scan(&result.VisitId, &result.UserVisitedId, &result.GuestName, &result.GuestEmail, &result.VisitIntention, &result.VaccineCertificate, &result.VisitStatus, &result.GuestCount, &result.VisitHour, &result.Transportation)
+		err = rows.Scan(&result.VisitId, &result.UserVisitedId, &result.GuestName, &result.GuestEmail, &result.VisitIntention, &result.VaccineCertificate, &result.VisitDate, &result.VisitStatus, &result.GuestCount, &result.VisitHour, &result.Transportation)
 
 		if err != nil {
 			return nil, err
@@ -139,11 +142,44 @@ func (v *VisitRepository) GetVisitByDate(startDate string, endDate string) ([]mo
 	return visits, nil
 }
 
+func (v *VisitRepository) ConfirmFinish(visitId int) (*models.Visit, error) {
+	sqlStatement := `
+	UPDATE visit
+	SET
+		visit_status = 'selesai'
+	WHERE visit_id = ?
+	RETURNING visit_id, user_visited_id, guest_name, guest_email, visit_intention, vaccine_certificate, visit_status,guest_count, visit_hour, transportation, visit_date;`
+
+	var result models.Visit
+	err := v.db.QueryRow(sqlStatement, visitId).
+		Scan(&result.VisitId, &result.UserVisitedId, &result.GuestName, &result.GuestEmail, &result.VisitIntention, &result.VaccineCertificate, &result.VisitStatus, &result.GuestCount, &result.VisitHour, &result.Transportation, &result.VisitDate)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+func (v *VisitRepository) ConfirmArrival(visitId int) (*models.Visit, error) {
+	sqlStatement := `
+	UPDATE visit
+	SET
+		visit_status = 'sedang berlangsung'
+	WHERE visit_id = ?
+	RETURNING visit_id, user_visited_id, guest_name, guest_email, visit_intention, vaccine_certificate, visit_status,guest_count, visit_hour, transportation, visit_date;`
+
+	var result models.Visit
+	err := v.db.QueryRow(sqlStatement, visitId).
+		Scan(&result.VisitId, &result.UserVisitedId, &result.GuestName, &result.GuestEmail, &result.VisitIntention, &result.VaccineCertificate, &result.VisitStatus, &result.GuestCount, &result.VisitHour, &result.Transportation, &result.VisitDate)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
 func (v *VisitRepository) DeleteVisit(visitId int) (*models.Visit, error) {
 	sqlStatement := `
 	DELETE FROM visit 
 	WHERE visit_id = ?
-	RETURNING visit_id, user_visited_id, guest_name, guest_email, visit_intention, vaccine_certificate, visit_status, guest_feedback, guest_count, visit_hour, transportation, visit_date;`
+	RETURNING visit_id, user_visited_id, guest_name, guest_email, visit_intention, vaccine_certificate, visit_status,guest_count, visit_hour, transportation, visit_date;`
 	var result models.Visit
 	err := v.db.QueryRow(sqlStatement, visitId).
 		Scan(&result.VisitId, &result.UserVisitedId, &result.GuestName, &result.GuestEmail, &result.VisitIntention, &result.VaccineCertificate, &result.VisitStatus, &result.GuestCount, &result.VisitHour, &result.Transportation, &result.VisitDate)

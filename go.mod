@@ -20,6 +20,7 @@ require (
 )
 
 require (
+	github.com/go-chi/cors v1.2.1
 	github.com/gocarina/gocsv v0.0.0-20220927221512-ad3251f9fa25
 	golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect

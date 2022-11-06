@@ -57,6 +57,7 @@ func (a *API) GetRouter() http.Handler {
 		r.Delete("/api/v1/users/{id}", services.DeleteUserByID(a.UserRepo))
 		r.Get("/api/v1/visits/generate", services.GenerateFileVisit(a.VisitRepo, a.UserRepo))
 		r.Post("/api/v1/visits/{id}/confirm", services.ConfirmVisit(a.VisitRepo))
+		r.Get("/api/v1/user/token", services.GetUserByToken(a.UserRepo))
 		// Export Data
 
 	})

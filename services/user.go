@@ -17,6 +17,20 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+func GetUserByToken(userRepo *repository.UserRepository) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		userData, ok := r.Context().Value("user_data").(models.User)
+		if !ok {
+			log.Println("userData not found")
+			helpers.ErrorResponseJSON(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		helpers.SuccessResponseJSON(w, "Success Getting User By Token", userData)
+
+	})
+}
 func UpdateUserByID(userRepo *repository.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var u models.User

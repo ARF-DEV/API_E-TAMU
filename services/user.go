@@ -17,6 +17,11 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+type userForVisit struct {
+	UserID   int    `json:"user_id"`
+	UserName string `json:"user_name"`
+}
+
 func GetUserByToken(userRepo *repository.UserRepository) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -118,11 +123,11 @@ func GetUserByID(userRepo *repository.UserRepository) http.HandlerFunc {
 }
 func GetUsersByName(userRepo *repository.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		name := chi.URLParam(r, "name")
+		name := r.URL.Query().Get("name")
 
 		if len(name) < 1 {
-			log.Println("Error : name params not found")
-			helpers.ErrorResponseJSON(w, "id params required", http.StatusBadRequest)
+			log.Println("Error : name query not found")
+			helpers.ErrorResponseJSON(w, "name query required", http.StatusBadRequest)
 			return
 		}
 
@@ -201,6 +206,57 @@ func GetAllUser(userRepo *repository.UserRepository) http.HandlerFunc {
 			}
 
 			helpers.SuccessResponseJSON(w, "Success", users)
+		}
+
+	}
+}
+
+func GetAllAvailableUser(userRepo *repository.UserRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		name := r.URL.Query().Get("name")
+
+		if len(name) > 0 {
+			fmt.Println(name)
+			users, err := userRepo.GetUsersByName(name)
+
+			if err != nil {
+				fmt.Println("Error while getting users by name : ", err.Error())
+				helpers.ErrorResponseJSON(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			var response []userForVisit
+			for _, user := range users {
+				var u userForVisit
+
+				u.UserID = user.UserId
+				u.UserName = user.UserName
+
+				response = append(response, u)
+			}
+
+			helpers.SuccessResponseJSON(w, "Success", response)
+		} else {
+			users, err := userRepo.GetAllUser()
+
+			if err != nil {
+				fmt.Println("Error while getting all user : ", err.Error())
+				helpers.ErrorResponseJSON(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			var response []userForVisit
+			for _, user := range users {
+				var u userForVisit
+
+				u.UserID = user.UserId
+				u.UserName = user.UserEmail
+
+				response = append(response, u)
+			}
+
+			helpers.SuccessResponseJSON(w, "Success", response)
+
 		}
 
 	}

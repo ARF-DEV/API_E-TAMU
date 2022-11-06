@@ -170,7 +170,7 @@ func RegisterVisit(visitRepo *repository.VisitRepository) http.HandlerFunc {
 		}
 
 		//Kirim kode OTP ke email
-		err = helpers.SendOTPEmail(v.GuestEmail, key)
+		go helpers.SendOTPEmail(v.GuestEmail, key)
 
 		if err != nil {
 			log.Println("Error while sending Email", err.Error())

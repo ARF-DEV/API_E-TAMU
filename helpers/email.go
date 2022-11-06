@@ -58,7 +58,7 @@ func SendVisitNotif(to string, guestName string) error {
 	msg.SetHeader("From", senderEmail)
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Notifikasi Kunjungan")
-	msg.SetBody("text/html", fmt.Sprintf("ID Kunjungan: <b>%s</b>", guestName))
+	msg.SetBody("text/html", fmt.Sprintf("Tamu atas nama <b>%s</b> ingin bertemu dengan anda", guestName))
 
 	n := gomail.NewDialer("smtp.gmail.com", 587, senderEmail, senderPass)
 

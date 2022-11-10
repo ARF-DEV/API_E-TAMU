@@ -211,6 +211,35 @@ func GetAllUser(userRepo *repository.UserRepository) http.HandlerFunc {
 	}
 }
 
+func GetVisitedUser(userRepo *repository.UserRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := chi.URLParam(r, "id")
+
+		if len(id) < 1 {
+			log.Println("Error product by id : id query not found")
+			helpers.ErrorResponseJSON(w, "id query required", http.StatusBadRequest)
+			return
+		}
+
+		id_int, err := strconv.Atoi(id)
+
+		if err != nil {
+			log.Println("Error product by id : ", err.Error())
+			helpers.ErrorResponseJSON(w, "Invalid id query", http.StatusBadRequest)
+			return
+		}
+		user, err := userRepo.GetUserByID(id_int)
+
+		if err != nil {
+			fmt.Println("Error while getting users by name : ", err.Error())
+			helpers.ErrorResponseJSON(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		helpers.SuccessResponseJSON(w, "Success", userForVisit{UserName: user.UserName, UserID: user.UserId})
+	}
+}
+
 func GetAllAvailableUser(userRepo *repository.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

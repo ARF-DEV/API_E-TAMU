@@ -12,4 +12,5 @@ type Visit struct {
 	VisitDate          string `db:"visit_date" json:"visit_date" validate:"required"`
 	VisitHour          string `db:"visit_hour" json:"visit_hour" validate:"required"`
 	Transportation     string `db:"transportation" json:"transportation" validate:"required"`
+	Confirmation       string `db:"confirmation" json:"confirmation"`
 }

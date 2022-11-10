@@ -43,7 +43,10 @@ func (a *API) GetRouter() http.Handler {
 		r.Post("/api/v1/visit/create", services.RegisterVisit(a.VisitRepo))
 		r.Post("/api/v1/visit/verify", services.VerifyOTPRegisterVisit(a.VisitRepo, a.UserRepo))
 		r.Get("/api/v1/visit/users", services.GetAllAvailableUser(a.UserRepo))
+		r.Get("/api/v1/visit/users/{id}", services.GetVisitedUser(a.UserRepo))
 		r.Get("/api/v1/visits/{id}", services.GetVisitByID(a.VisitRepo))
+		r.Get("/api/v1/visits/confirmvisit", services.ConfirmVisitProposal(a.VisitRepo))
+		r.Get("/api/v1/visits/cancelvisit", services.CancelVisitProposal(a.VisitRepo))
 	})
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.Authorization(a.UserRepo))

@@ -99,17 +99,29 @@ func GetVisitByStaffID(visitRepo *repository.VisitRepository) http.HandlerFunc {
 
 func GetVisitsByDateRange(visitRepo *repository.VisitRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var d DateRange
+		var d DateRange = DateRange{}
 
-		defer r.Body.Close()
+		d.StartDate = r.URL.Query().Get("start_date")
+		d.EndDate = r.URL.Query().Get("end_date")
 
-		err := json.NewDecoder(r.Body).Decode(&d)
+		validate := validator.New()
+
+		err := validate.Struct(d)
 
 		if err != nil {
-			log.Println("Error on visits by date range: ", err.Error())
-			helpers.ErrorResponseJSON(w, "Json is Invalid", http.StatusBadRequest)
+			log.Println("Request Invalid", err.Error())
+			helpers.ErrorResponseJSON(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		// defer r.Body.Close()
+
+		// err := json.NewDecoder(r.Body).Decode(&d)
+
+		// if err != nil {
+		// 	log.Println("Error on visits by date range: ", err.Error())
+		// 	helpers.ErrorResponseJSON(w, "Json is Invalid", http.StatusBadRequest)
+		// 	return
+		// }
 
 		visits, err := visitRepo.GetVisitByDate(d.StartDate, d.EndDate)
 

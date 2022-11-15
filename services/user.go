@@ -146,7 +146,6 @@ func GetUsersByName(userRepo *repository.UserRepository) http.HandlerFunc {
 func UserLogin(userRepo *repository.UserRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var u models.User
-
 		defer r.Body.Close()
 		err := json.NewDecoder(r.Body).Decode(&u)
 		if err != nil {
@@ -154,13 +153,14 @@ func UserLogin(userRepo *repository.UserRepository) http.HandlerFunc {
 			helpers.ErrorResponseJSON(w, "Json is Invalid", http.StatusBadRequest)
 			return
 		}
+		fmt.Println(u)
 
 		user, err := userRepo.GetUserByEmail(u.UserEmail)
 
 		if err != nil {
 			log.Println("Error on Login: ", err.Error())
 			if errors.Is(err, sql.ErrNoRows) {
-				helpers.ErrorResponseJSON(w, "User Not Found", http.StatusOK)
+				helpers.ErrorResponseJSON(w, "User Not Found", http.StatusNotFound)
 				return
 			}
 

@@ -174,7 +174,7 @@ func UserLogin(userRepo *repository.UserRepository) http.HandlerFunc {
 			return
 		}
 
-		expTime := time.Now().Add(time.Minute * 30)
+		expTime := time.Now().Add(time.Minute * 60 * 24)
 		tokenString, err := helpers.GenerateUserToken(*user, expTime)
 
 		if err != nil {

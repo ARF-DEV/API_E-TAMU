@@ -172,7 +172,7 @@ func RegisterVisit(visitRepo *repository.VisitRepository) http.HandlerFunc {
 			return
 		}
 
-		expTime := time.Now().Add(time.Minute * 10)
+		expTime := time.Now().Add(time.Minute * 60 * 24)
 		tokenString, key, err := helpers.GenerateRegisterOTPClaims(v, expTime)
 
 		if err != nil {

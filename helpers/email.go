@@ -1,13 +1,31 @@
 package helpers
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"os"
+	"text/template"
 
 	"gopkg.in/gomail.v2"
 )
 
-func SendOTPEmail(to string, otpString string) error {
+func SendOTPEmail(to string, data interface{}) error {
+	// t := template.New("./email/emailOTP.html")
+
+	var err error
+	t, err := template.ParseFiles("./email/emailOTP.html")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, data); err != nil {
+		log.Println(err)
+	}
+
+	result := tpl.String()
 	senderEmail := os.Getenv("SERVICE_EMAIL")
 	senderPass := os.Getenv("SERVICE_EMAIL_PASS")
 	// log.Printf("Email:%s\nPassword:%s\n", senderEmail, senderPass)
@@ -15,7 +33,7 @@ func SendOTPEmail(to string, otpString string) error {
 	msg.SetHeader("From", senderEmail)
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Nomor OTP Pengajuan Kunjungan")
-	msg.SetBody("text/html", fmt.Sprintf("Code : <b>%s</b>", otpString))
+	msg.SetBody("text/html", result)
 
 	n := gomail.NewDialer("smtp.gmail.com", 587, senderEmail, senderPass)
 
@@ -24,7 +42,6 @@ func SendOTPEmail(to string, otpString string) error {
 	}
 
 	return nil
-
 }
 
 func SendVisitID(to string, visitID int) error {

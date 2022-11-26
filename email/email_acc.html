@@ -1,119 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status Kunjungan</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title></title>
+    <style>
+        table,
+        td,
+        div,
+        h1,
+        p {
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="form-container">
-            <div class="logo">
-                <img src="https://drive.google.com/uc?export=view&id=1L0dhPn39Y4_T8sesZMR4FaIh78TZXfQh" alt="Logo labinta" />
-                <h2>PT. Sugar Labinta</h2>
-            </div>
-            <div>
-                <h3>Status Kunjungan</h3>
-                <p>Berikut adalah status terbaru dari kunjungan <br> dengan ID</p>
-                <div class="id">
-                    <label for="id">123456</label>
-                </div>
-                <br />
-                <p>
-                    Kunjungan anda berstatus
-                </p>
-                <h4>Diterima</h4>
-                <p>
-                    Untuk cek status dan detail kunjungan silahkan
-                </p>
-            </div>
-        </div>
-    </div>
+<body style="margin:0;padding:0;">
+    <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#1a1a1a;">
+        <tr>
+            <td align="center" style="padding:0;">
+                <table role="presentation" style="width:602px;border-collapse:collapse;border-spacing:0;text-align:left;">
+                    <tr>
+                        <td align="center" style="padding:40px 0 0 0;">
+                            <img src="https://drive.google.com/uc?export=view&id=1L0dhPn39Y4_T8sesZMR4FaIh78TZXfQh" alt="" width="150px" height="150px" style="display:block; border-radius: 50%;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="color: white; padding:20px 0 0 0; font-size: 20px;">
+                            <div>PT. Sugar Labinta</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="color: white; padding:40px 0 0 0; font-size: 30pt;">
+                            <div>
+                                <span><b>Status Kunjungan</b></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="color: white; padding:40px 0 10px 0; font-size: 15pt;">
+                            <div>
+                                <span>Berikut adalah status terbaru dari kunjungan <br> dengan ID</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <td style="padding:10px 20px 20px;color:white;">
+                        <div style="padding: 20px 0; font-size:14px;font-family:Arial,sans-serif; text-align: center; font-weight: 600; border-radius: 10px; border: 1px solid white;">
+                            <div style="font-size: 28px; margin-top: 10px;">
+                                {{.}}
+                            </div>
+                        </div>
+                    </td>
+                    <tr>
+                        <td>
+                            <div align="center" style="color: white; padding:0 0 40px 0; font-size: 14pt;">
+                                <span>Kunjungan anda sekarang berstatus</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="color: white; font-size: 18pt; padding: 12px; width: 190px; background: #00B14C;; border-radius: 5px;margin: auto; text-align:center; margin-bottom: 30px;">
+                                <span>Diterima</span>
+                            </div>
+                        </td>
+                    </tr>
+        </tr>
+        </table>
+        </td>
+        </tr>
+    </table>
+    </td>
+    </tr>
+    </table>
 </body>
-
-<style>
-    body {
-        font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-        font-size: 16px;
-        line-height: 24px;
-        font-weight: 400px;
-        background-color: #828282;
-        font-synthesis: none;
-        text-rendering: optimizeLegibility;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-text-size-adjust: 100%;
-        color: black;
-        height: 100vh;
-        width: 100%;
-        margin: 0;
-        text-align: center;
-    }
-    
-    .form-container {
-        position: absolute;
-        width: 90%;
-        height: 85%;
-        left: 5%;
-        right: 5%;
-        top: 50px;
-        background: #1a1a1a;
-        border-radius: 5px;
-    }
-    
-    .logo {
-        height: 20%;
-        align-items: center;
-        margin-top: 50px;
-    }
-    
-    img {
-        border-radius: 50%;
-        width: 100px;
-        position: relative;
-    }
-    
-    h2 {
-        color: white;
-        margin-top: 0px;
-        font-size: 20px;
-    }
-    
-    h3 {
-        color: white;
-        margin-top: 50px;
-    }
-    
-    h4 {
-        color: white;
-        font-size: 18px;
-        padding: 12px;
-        width: 190px;
-        background: #00B14C;
-        border-radius: 5px;
-        margin: auto;
-    }
-    
-    p {
-        color: white;
-        margin-top: 20px;
-    }
-    
-    .id {
-        font-size: 50px;
-        font-family: cursive;
-        color: aqua;
-    }
-    
-    .box {
-        width: 150px;
-        height: 50px;
-        background-color: #00B14C;
-        border-radius: 5px;
-    }
-</style>
 
 </html>

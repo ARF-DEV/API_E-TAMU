@@ -45,8 +45,8 @@ func (a *API) GetRouter() http.Handler {
 		r.Get("/api/v1/visit/users", services.GetAllAvailableUser(a.UserRepo))
 		r.Get("/api/v1/visit/users/{id}", services.GetVisitedUser(a.UserRepo))
 		r.Get("/api/v1/visits/{id}", services.GetVisitByID(a.VisitRepo))
-		r.Get("/api/v1/visits/confirmvisit", services.ConfirmVisitProposal(a.VisitRepo))
-		r.Get("/api/v1/visits/cancelvisit", services.CancelVisitProposal(a.VisitRepo))
+		r.Get("/api/v1/visits/confirmvisit", services.ConfirmVisitProposalRedirect(a.VisitRepo))
+		r.Get("/api/v1/visits/cancelvisit", services.CancelVisitProposalRedirect(a.VisitRepo))
 	})
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.Authorization(a.UserRepo))
@@ -61,6 +61,8 @@ func (a *API) GetRouter() http.Handler {
 		r.Delete("/api/v1/users/{id}", services.DeleteUserByID(a.UserRepo))
 		r.Get("/api/v1/visits/generate", services.GenerateFileVisit(a.VisitRepo, a.UserRepo))
 		r.Post("/api/v1/visits/{id}/confirm", services.ConfirmVisit(a.VisitRepo))
+		r.Post("/api/v1/visits/confirmvisit", services.ConfirmVisitProposal(a.VisitRepo))
+		r.Post("/api/v1/visits/cancelvisit", services.CancelVisitProposal(a.VisitRepo))
 		r.Get("/api/v1/user/token", services.GetUserByToken(a.UserRepo))
 		// Export Data
 

@@ -477,7 +477,7 @@ func GetVisitByStatus(visitRepo *repository.VisitRepository) http.HandlerFunc {
 	}
 }
 
-func ConfirmVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFunc {
+func ConfirmVisitProposalRedirect(visitRepo *repository.VisitRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
 
@@ -508,7 +508,7 @@ func ConfirmVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFun
 	}
 }
 
-func CancelVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFunc {
+func CancelVisitProposalRedirect(visitRepo *repository.VisitRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
 
@@ -535,5 +535,66 @@ func CancelVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFunc
 		go helpers.SendCancelProposalEmail(visit.GuestEmail, visit.VisitId)
 		// helpers.SuccessResponseJSON(w, "Success", visit)
 		http.Redirect(w, r, os.Getenv("REDIRECT_LINK"), http.StatusFound)
+	}
+}
+
+func ConfirmVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("id")
+
+		if id == "" {
+			fmt.Println("Error while confirming visit: URL param is not found")
+			helpers.ErrorResponseJSON(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			fmt.Println("Error while parsing id param: ", err.Error())
+			helpers.ErrorResponseJSON(w, "id is invalid", http.StatusBadRequest)
+			return
+		}
+
+		visit, err := visitRepo.ConfirmVisitProposal(idInt)
+
+		if err != nil {
+			fmt.Println("Error while confirming visit: ", err.Error())
+			helpers.ErrorResponseJSON(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		go helpers.SendConfirmProposalEmail(visit.GuestEmail, visit.VisitId)
+
+		helpers.SuccessResponseJSON(w, "Success", visit)
+		// http.Redirect(w, r, os.Getenv("REDIRECT_LINK"), http.StatusFound)
+	}
+}
+
+func CancelVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("id")
+
+		if id == "" {
+			fmt.Println("Error while confirming visit: URL param is not found")
+			helpers.ErrorResponseJSON(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			fmt.Println("Error while parsing id param: ", err.Error())
+			helpers.ErrorResponseJSON(w, "id is invalid", http.StatusBadRequest)
+			return
+		}
+
+		visit, err := visitRepo.CancelVisitProposal(idInt)
+
+		if err != nil {
+			fmt.Println("Error while confirming visit: ", err.Error())
+			helpers.ErrorResponseJSON(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		go helpers.SendCancelProposalEmail(visit.GuestEmail, visit.VisitId)
+		helpers.SuccessResponseJSON(w, "Success", visit)
+		// http.Redirect(w, r, os.Getenv("REDIRECT_LINK"), http.StatusFound)
 	}
 }

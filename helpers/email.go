@@ -14,7 +14,7 @@ func SendOTPEmail(to string, data interface{}) error {
 	// t := template.New("./email/emailOTP.html")
 
 	var err error
-	t, err := template.ParseFiles("./email/notif_visit.html")
+	t, err := template.ParseFiles("./email/emailotp.html")
 	if err != nil {
 		log.Println(err)
 		return err

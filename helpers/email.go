@@ -14,7 +14,7 @@ func SendOTPEmail(to string, data interface{}) error {
 	// t := template.New("./email/emailOTP.html")
 
 	var err error
-	t, err := template.ParseFiles("./email/emailOTP.html")
+	t, err := template.ParseFiles("./email/emailotp.html")
 	if err != nil {
 		log.Println(err)
 		return err
@@ -38,6 +38,7 @@ func SendOTPEmail(to string, data interface{}) error {
 	n := gomail.NewDialer("smtp.gmail.com", 587, senderEmail, senderPass)
 
 	if err := n.DialAndSend(msg); err != nil {
+		log.Println(err)
 		return err
 	}
 

@@ -46,7 +46,19 @@ func SendOTPEmail(to string, data interface{}) error {
 }
 
 func SendVisitID(to string, visitID int) error {
-	// fmt.Println("Visit ID to : ", to)
+	var err error
+	t, err := template.ParseFiles("./email/emailotp.html")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, visitID); err != nil {
+		log.Println(err)
+	}
+
+	result := tpl.String()
 	senderEmail := os.Getenv("SERVICE_EMAIL")
 	senderPass := os.Getenv("SERVICE_EMAIL_PASS")
 	// log.Printf("Email:%s\nPassword:%s\n", senderEmail, senderPass)
@@ -54,7 +66,7 @@ func SendVisitID(to string, visitID int) error {
 	msg.SetHeader("From", senderEmail)
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Email Konfirmasi Kunjungan")
-	msg.SetBody("text/html", fmt.Sprintf("ID Kunjungan: <b>%d</b>", visitID))
+	msg.SetBody("text/html", result)
 
 	n := gomail.NewDialer("smtp.gmail.com", 587, senderEmail, senderPass)
 
@@ -67,7 +79,28 @@ func SendVisitID(to string, visitID int) error {
 }
 
 func SendVisitNotif(to string, guestName string, visitID int) error {
-	// fmt.Println("Notif to : ", to)
+	var err error
+	t, err := template.ParseFiles("./email/emailotp.html")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	var data struct {
+		GuestName string
+		VisitID   int
+	} = struct {
+		GuestName string
+		VisitID   int
+	}{
+		GuestName: guestName,
+		VisitID:   visitID,
+	}
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, data); err != nil {
+		log.Println(err)
+	}
+
+	result := tpl.String()
 	senderEmail := os.Getenv("SERVICE_EMAIL")
 	senderPass := os.Getenv("SERVICE_EMAIL_PASS")
 	// redirectLink := os.Getenv("REDIRECT_LINK")
@@ -76,9 +109,7 @@ func SendVisitNotif(to string, guestName string, visitID int) error {
 	msg.SetHeader("From", senderEmail)
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Notifikasi Kunjungan")
-	msg.SetBody("text/html", fmt.Sprintf(`Tamu atas nama <b>%s</b> ingin bertemu dengan anda </br>
-	klik <a href='http://localhost:8000/api/v1/visits/confirmvisit?id=%d'>link ini</a> untuk menerima permintaan ini</br>
-	klik <a href='http://localhost:8000/api/v1/visits/cancelvisit?id=%d'>link ini </a> untuk menolak permintaan ini`, guestName, visitID, visitID))
+	msg.SetBody("text/html", result)
 
 	n := gomail.NewDialer("smtp.gmail.com", 587, senderEmail, senderPass)
 
@@ -91,6 +122,25 @@ func SendVisitNotif(to string, guestName string, visitID int) error {
 }
 
 func SendCancelProposalEmail(to string, visitID int) error {
+	var err error
+	t, err := template.ParseFiles("./email/emailotp.html")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	var data struct {
+		VisitID int
+	} = struct {
+		VisitID int
+	}{
+		VisitID: visitID,
+	}
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, data); err != nil {
+		log.Println(err)
+	}
+
+	result := tpl.String()
 	fmt.Println("Cancel Proposal to : ", to)
 	senderEmail := os.Getenv("SERVICE_EMAIL")
 	senderPass := os.Getenv("SERVICE_EMAIL_PASS")
@@ -99,7 +149,7 @@ func SendCancelProposalEmail(to string, visitID int) error {
 	msg.SetHeader("From", senderEmail)
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Kunjungan Ditolak")
-	msg.SetBody("text/html", fmt.Sprintf("Kunjungan anda dengan id <b>%d</b>, telah ditolak oleh yang dikunjungi", visitID))
+	msg.SetBody("text/html", result)
 
 	n := gomail.NewDialer("smtp.gmail.com", 587, senderEmail, senderPass)
 
@@ -111,7 +161,25 @@ func SendCancelProposalEmail(to string, visitID int) error {
 }
 
 func SendConfirmProposalEmail(to string, visitID int) error {
-	// fmt.Println("Visit ID to : ", to)
+	var err error
+	t, err := template.ParseFiles("./email/emailotp.html")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	var data struct {
+		VisitID int
+	} = struct {
+		VisitID int
+	}{
+		VisitID: visitID,
+	}
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, data); err != nil {
+		log.Println(err)
+	}
+
+	result := tpl.String()
 	senderEmail := os.Getenv("SERVICE_EMAIL")
 	senderPass := os.Getenv("SERVICE_EMAIL_PASS")
 	// log.Printf("Email:%s\nPassword:%s\n", senderEmail, senderPass)
@@ -119,7 +187,7 @@ func SendConfirmProposalEmail(to string, visitID int) error {
 	msg.SetHeader("From", senderEmail)
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", "Kunjungan Diterima")
-	msg.SetBody("text/html", fmt.Sprintf("Kunjungan anda dengan id <b>%d</b>, telah diterima oleh yang dikunjungi", visitID))
+	msg.SetBody("text/html", result)
 
 	n := gomail.NewDialer("smtp.gmail.com", 587, senderEmail, senderPass)
 

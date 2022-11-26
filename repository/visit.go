@@ -34,7 +34,7 @@ func (v *VisitRepository) CreateVisit(visit models.Visit) (*models.Visit, error)
 }
 
 func (v *VisitRepository) GetAllVisit() ([]models.Visit, error) {
-	sqlStatement := `SELECT * FROM visit;`
+	sqlStatement := `SELECT * FROM visit ORDER BY visit_date DESC;`
 
 	rows, err := v.db.Query(sqlStatement)
 
@@ -72,7 +72,7 @@ func (v *VisitRepository) GetVisitByID(visitId int) (*models.Visit, error) {
 
 func (v *VisitRepository) GetVisitByStaffID(staffId int) ([]models.Visit, error) {
 	fmt.Println(staffId)
-	sqlStatement := `SELECT * FROM visit WHERE user_visited_id = ?;`
+	sqlStatement := `SELECT * FROM visit WHERE user_visited_id = ? ORDER BY visit_date DESC;`
 
 	rows, err := v.db.Query(sqlStatement, staffId)
 
@@ -96,7 +96,7 @@ func (v *VisitRepository) GetVisitByStaffID(staffId int) ([]models.Visit, error)
 }
 
 func (v *VisitRepository) GetVisitByStatus(status string) ([]models.Visit, error) {
-	sqlStatement := `SELECT * FROM visit WHERE visit_status LIKE ?;`
+	sqlStatement := `SELECT * FROM visit WHERE visit_status LIKE ? ORDER BY visit_date DESC;`
 
 	rows, err := v.db.Query(sqlStatement, status)
 
@@ -120,7 +120,7 @@ func (v *VisitRepository) GetVisitByStatus(status string) ([]models.Visit, error
 }
 
 func (v *VisitRepository) GetVisitByDate(startDate string, endDate string) ([]models.Visit, error) {
-	sqlStatement := `SELECT * FROM visit WHERE visit_date BETWEEN ? and ?;`
+	sqlStatement := `SELECT * FROM visit WHERE visit_date BETWEEN ? and ? ORDER BY visit_date DESC;`
 
 	rows, err := v.db.Query(sqlStatement, startDate, endDate)
 

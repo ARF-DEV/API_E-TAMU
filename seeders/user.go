@@ -26,7 +26,9 @@ func MigrateUser(db *sql.DB) {
 		insert into user_data (user_name, user_email, user_role, user_password) values ('Chick Snowball', 'csnowball6@scribd.com', 'Staff', '9ieHX1qnc4VS');
 		insert into user_data (user_name, user_email, user_role, user_password) values ('Francisco Solano', 'fsolano7@liveinternet.ru', 'Staff', 'BF4PjA28');
 		insert into user_data (user_name, user_email, user_role, user_password) values ('Sax Cant', 'scant8@livejournal.com', 'Staff', 'Mccb2dXDwHc');
-		insert into user_data (user_name, user_email, user_role, user_password) values ('Brigitte Tivenan', 'muhammad.119140149@student.itera.ac.id', 'staff', '12345');
+		insert into user_data (user_name, user_email, user_role, user_password) values ('Muhammad Ariefuddin Satria Dharma', 'muhammad.119140149@student.itera.ac.id', 'admin', '12345');
+		insert into user_data (user_name, user_email, user_role, user_password) values ('Athif', 'athif.119140191@student.itera.ac.id', 'security', '12345');
+		insert into user_data (user_name, user_email, user_role, user_password) values ('Aldi', 'maldi.119140125@student.itera.ac.id', 'staff', '12345');
 	`
 	_, err := db.Exec(sqlStatement)
 

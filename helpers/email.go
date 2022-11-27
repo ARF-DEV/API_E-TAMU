@@ -10,7 +10,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func SendOTPEmail(to string, data interface{}) error {
+func SendOTPEmail(to string, token string) error {
 	// t := template.New("./email/emailOTP.html")
 
 	var err error
@@ -19,7 +19,13 @@ func SendOTPEmail(to string, data interface{}) error {
 		log.Println(err)
 		return err
 	}
-
+	var data struct {
+		Token string
+	} = struct {
+		Token string
+	}{
+		Token: token,
+	}
 	var tpl bytes.Buffer
 	if err := t.Execute(&tpl, data); err != nil {
 		log.Println(err)
@@ -47,7 +53,7 @@ func SendOTPEmail(to string, data interface{}) error {
 
 func SendVisitID(to string, visitID int) error {
 	var err error
-	t, err := template.ParseFiles("./email/emailotp.html")
+	t, err := template.ParseFiles("./email/email_id_visit.html")
 	if err != nil {
 		log.Println(err)
 		return err
@@ -80,7 +86,7 @@ func SendVisitID(to string, visitID int) error {
 
 func SendVisitNotif(to string, guestName string, visitID int) error {
 	var err error
-	t, err := template.ParseFiles("./email/emailotp.html")
+	t, err := template.ParseFiles("./email/notif_visit.html")
 	if err != nil {
 		log.Println(err)
 		return err
@@ -123,7 +129,7 @@ func SendVisitNotif(to string, guestName string, visitID int) error {
 
 func SendCancelProposalEmail(to string, visitID int) error {
 	var err error
-	t, err := template.ParseFiles("./email/emailotp.html")
+	t, err := template.ParseFiles("./email/email_dec.html")
 	if err != nil {
 		log.Println(err)
 		return err
@@ -162,7 +168,7 @@ func SendCancelProposalEmail(to string, visitID int) error {
 
 func SendConfirmProposalEmail(to string, visitID int) error {
 	var err error
-	t, err := template.ParseFiles("./email/emailotp.html")
+	t, err := template.ParseFiles("./email/email_acc.html")
 	if err != nil {
 		log.Println(err)
 		return err

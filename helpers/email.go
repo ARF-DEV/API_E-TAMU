@@ -58,9 +58,15 @@ func SendVisitID(to string, visitID int) error {
 		log.Println(err)
 		return err
 	}
-
+	var data struct {
+		VisitID int
+	} = struct {
+		VisitID int
+	}{
+		VisitID: visitID,
+	}
 	var tpl bytes.Buffer
-	if err := t.Execute(&tpl, visitID); err != nil {
+	if err := t.Execute(&tpl, data); err != nil {
 		log.Println(err)
 	}
 

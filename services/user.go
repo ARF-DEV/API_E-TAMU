@@ -279,7 +279,7 @@ func GetAllAvailableUser(userRepo *repository.UserRepository) http.HandlerFunc {
 				var u userForVisit
 
 				u.UserID = user.UserId
-				u.UserName = user.UserEmail
+				u.UserName = user.UserName
 
 				response = append(response, u)
 			}

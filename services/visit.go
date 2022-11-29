@@ -39,6 +39,55 @@ type VisitCSV struct {
 	Transportation     string `csv:"transportation"`
 }
 
+func RepeatSendOTP() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		AuthHeader := r.Header.Get("Authorization")
+
+		if !strings.Contains(AuthHeader, "OTP") {
+			log.Println("Error while getting OTP token : OTP Token Not Found")
+			helpers.ErrorResponseJSON(w, "OTP Token Not Found", http.StatusUnauthorized)
+			return
+		}
+
+		tokenString := strings.Replace(AuthHeader, "OTP ", "", -1)
+
+		claims := helpers.RegisterVisitOTPClaims{}
+
+		token, err := jwt.ParseWithClaims(tokenString, &claims, func(t *jwt.Token) (interface{}, error) {
+			if method, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("signing method invalid")
+			} else if method != jwt.SigningMethodHS256 {
+				return nil, fmt.Errorf("signing method invalid")
+			}
+
+			return []byte(os.Getenv("JWT_OTP_KEY")), nil
+		})
+
+		if err != nil {
+			log.Println("Error while parsing claims: ", err.Error())
+			helpers.ErrorResponseJSON(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		if !token.Valid {
+			log.Println("Error : Token is Invalid")
+			helpers.ErrorResponseJSON(w, "Unauthorized", http.StatusUnauthorized)
+			helpers.RemoveFile(r, claims.VisitData.VaccineCertificate)
+			return
+		}
+		err = helpers.SendOTPEmail(claims.VisitData.GuestEmail, claims.OTPSecret)
+		if err != nil {
+			log.Println("Error while sending OTP: ", err)
+			helpers.ErrorResponseJSON(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		helpers.SuccessResponseJSON(w, "Success Resend OTP", OTPTokenBody{
+			Token: tokenString,
+		})
+	})
+}
+
 func GetVisitByID(visitRepo *repository.VisitRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := chi.URLParam(r, "id")
@@ -540,7 +589,7 @@ func CancelVisitProposalRedirect(visitRepo *repository.VisitRepository) http.Han
 
 func ConfirmVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Query().Get("id")
+		id := chi.URLParam(r, "id")
 
 		if id == "" {
 			fmt.Println("Error while confirming visit: URL param is not found")
@@ -571,10 +620,10 @@ func ConfirmVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFun
 
 func CancelVisitProposal(visitRepo *repository.VisitRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Query().Get("id")
+		id := chi.URLParam(r, "id")
 
 		if id == "" {
-			fmt.Println("Error while confirming visit: URL param is not found")
+			fmt.Println("Error while canceling visit: URL param is not found")
 			helpers.ErrorResponseJSON(w, "Bad Request", http.StatusBadRequest)
 			return
 		}

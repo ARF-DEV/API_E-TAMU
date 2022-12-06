@@ -26,17 +26,17 @@ type DateRange struct {
 	EndDate   string `json:"end_date" validate:"required"`
 }
 type VisitCSV struct {
-	VisitId            int    `csv:"visit_id"`
-	UserVisitedName    string `csv:"user_visited_name"`
-	GuestName          string `csv:"guest_name"`
-	GuestEmail         string `csv:"guest_email"`
-	VisitIntention     string `csv:"visit_intention"`
-	VaccineCertificate string `csv:"vaccine_certificate"`
-	VisitStatus        string `csv:"visit_status"`
-	GuestCount         int    `csv:"guest_count"`
-	VisitDate          string `csv:"visit_date"`
-	VisitHour          string `csv:"visit_hour"`
-	Transportation     string `csv:"transportation"`
+	VisitId            int    `csv:"id_kunjungan"`
+	UserVisitedName    string `csv:"nama_staff_yang_di_kunjungi"`
+	GuestName          string `csv:"nama_tamu"`
+	GuestEmail         string `csv:"email_tamu"`
+	VisitIntention     string `csv:"maksut_kedatangan"`
+	VaccineCertificate string `csv:"sertifikat_vaksin"`
+	VisitStatus        string `csv:"status_kunjungan"`
+	GuestCount         int    `csv:"jumlah_tamu"`
+	VisitDate          string `csv:"tanggal_kunjungan"`
+	VisitHour          string `csv:"waktu_kunjungan"`
+	Transportation     string `csv:"kendaraan"`
 }
 
 func RepeatSendOTP() http.HandlerFunc {
